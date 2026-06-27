@@ -86,10 +86,10 @@ export async function getDatabase(): Promise<Db> {
     // Try to use real MongoDB if available
     if (!connectionFailed) {
         try {
-            const client = await Promise.race([
+            const client = (await Promise.race([
                 clientPromise,
                 new Promise((_, reject) => setTimeout(() => reject(new Error("Connection timeout")), 5000)),
-            ]);
+            ])) as MongoClient;
             if (client) {
                 return client.db(dbName);
             }
