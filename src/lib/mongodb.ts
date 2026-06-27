@@ -86,12 +86,12 @@ export async function getDatabase(): Promise<Db> {
     // Try to use real MongoDB if available
     if (!connectionFailed) {
         try {
-            const client = (await Promise.race([
+            const client: MongoClient = await Promise.race([
                 clientPromise,
-                new Promise((_, reject) => setTimeout(() => reject(new Error("Connection timeout")), 5000)),
-            ])) as MongoClient;
+                new Promise<MongoClient>((_, reject) => setTimeout(() => reject(new Error("Connection timeout")), 5000)),
+            ]);
             if (client) {
-                return client.db(dbName);
+                return (client as any).db(dbName);
             }
         } catch (err) {
             console.warn("MongoDB connection unavailable, using in-memory fallback");
